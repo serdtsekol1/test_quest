@@ -3,8 +3,10 @@ import os
 
 class Cleaner:
     path = None
+    delete_empty_dir = False
 
-    def __init__(self, _path):
+    def __init__(self, _path, _delete_empty_dir=False):
+        self.delete_empty_dir = _delete_empty_dir
         self.path = _path
 
     @staticmethod
@@ -15,10 +17,11 @@ class Cleaner:
         except Exception as ex:
             print(f'error delete file {_path}', ex)
 
-    @staticmethod
-    def __del_emp_dir__(_path: str) -> bool:
+    def __del_emp_dir__(self, _path: str) -> bool:
         list_dirs = os.listdir(_path)
         if not list_dirs:
+            if not self.delete_empty_dir:
+                return True
             try:
                 os.rmdir(_path)
                 print('dir deleted', _path)
@@ -47,7 +50,15 @@ class Cleaner:
 
 
 if __name__ == '__main__':
-    path = r"D:\xampp\htdocs\python_projects\GroupBWT\catalog"
+    path = input(r"Путь до папки (Приклад 'C:\test\test2'): ")
     cleaner = Cleaner(_path=path)
+
+    user_answer = input("Видаляти папки пусті папки? true/false: ").lower().strip()
+    if user_answer in ['true', '1']:
+        cleaner.delete_empty_dir = True
+    elif user_answer in ['false', '0']:
+        cleaner.delete_empty_dir = False
+    else:
+        print("Error: напишіть true або false")
     cleaner.del_empty_dirs_and_bak_files()
     print("finish")
